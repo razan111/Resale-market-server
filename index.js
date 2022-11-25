@@ -48,6 +48,8 @@ async function run(){
 
         const usersCollection = client.db('resalePortal').collection('users')
 
+        const productsCollection = client.db('resalePortal').collection('products')
+
         app.get('/jwt', async(req, res) =>{
             const email = req.query.email;
             const query = {email: email}
@@ -71,6 +73,12 @@ async function run(){
         app.post('/users', async(req, res) =>{
             const user = req.body;
             const result = await usersCollection.insertOne(user)
+            res.send(result)
+        })
+
+        app.post('/products', async(req, res)=>{
+            const product = req.body;
+            const result = await productsCollection.insertOne(product)
             res.send(result)
         })
 
