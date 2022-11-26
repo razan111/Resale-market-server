@@ -3,7 +3,7 @@ const app = express()
 const cors = require('cors')
 const port = process.env.PORT || 5000;
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 require('dotenv').config()
 
@@ -79,6 +79,34 @@ async function run(){
         app.post('/products', async(req, res)=>{
             const product = req.body;
             const result = await productsCollection.insertOne(product)
+            res.send(result)
+        })
+
+        app.get('/products', async(req, res)=>{
+            const query = {}
+            const product = await productsCollection.find(query).toArray();
+            res.send(product)
+        })
+
+        app.get('/users', async(req, res) =>{
+            const query = {}
+            const users = await usersCollection.find(query).toArray()
+            res.send(users)
+        })
+
+
+        // make admin 
+        app.put('/users/admin/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)}
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    role: 'Admin'
+                }
+            }
+            const result = await usersCollection.updateOne(filter, updatedDoc, options)
+
             res.send(result)
         })
 
