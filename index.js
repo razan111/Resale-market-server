@@ -97,18 +97,19 @@ async function run(){
             res.send(result)
         })
 
-        // app.get('/products/:id', async(req, res) =>{
-        //     const id = req.params.id;
-        //     const query = { _id: ObjectId(id)}
-        //     const product = await productsCollection.findOne(query)
-        //     res.send(product)
-        // })
+        // client advertised 
+        app.get('/advertised', async(req, res) =>{
+            // const Advertised = req.params.Advertised;
+            console.log({roleModel: "Advertised"})
+            const query = {roleModel: "Advertised"}
+            const product = await productsCollection.find(query).toArray();
+            res.send(product)
+        })
+        
 
         app.get('/products/:email',  async(req, res)=>{
-            // const email = req.params.email;
             const query = { }
             const product = await productsCollection.find(query).toArray();
-            // console.log(product)
             res.send(product)
         })
 
