@@ -76,15 +76,26 @@ async function run(){
             res.send(result)
         })
 
+
+
         app.post('/products', async(req, res)=>{
             const product = req.body;
             const result = await productsCollection.insertOne(product)
             res.send(result)
         })
 
-        app.get('/products', async(req, res)=>{
-            const query = {}
+        // app.get('/products/:id', async(req, res) =>{
+        //     const id = req.params.id;
+        //     const query = { _id: ObjectId(id)}
+        //     const product = await productsCollection.findOne(query)
+        //     res.send(product)
+        // })
+
+        app.get('/products/:email',  async(req, res)=>{
+            // const email = req.params.email;
+            const query = { }
             const product = await productsCollection.find(query).toArray();
+            console.log(product)
             res.send(product)
         })
 
@@ -94,21 +105,29 @@ async function run(){
         app.get('/users/admin/:email', async(req, res) =>{
             const email = req.params.email
             const query = { email }
-            console.log(email)
+            // console.log(email)
             
             const user = await usersCollection.findOne(query)
-            console.log(user)
+            // console.log(user)
             res.send({isAdmin: user?.role === "Admin"})
         })
 
         //seller
 
-        app.get('/users/seller/:email', async(req, res) =>{
+        app.get('/users/seller/:email',  async(req, res) =>{
             const email = req.params.email
-            const query = { email }
+            const query = { email: email }
             const user = await usersCollection.findOne(query)
+            // console.log(user)
             res.send({isSeller: user?.allUsers === "Seller"})
         })
+
+        // app.get('/products', async(req, res) =>{
+        //     const email = req.params.email;
+        //     const query = {email: email}
+        //     const products = await productsCollection.find(query).toArray()
+        //     res.send(products)
+        // })
 
 
 
@@ -144,6 +163,13 @@ async function run(){
             res.send(result)
         })
 
+
+        app.delete('/users/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const result = await usersCollection.deleteOne(filter)
+            res.send(result)
+        })
 
 
 
