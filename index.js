@@ -63,12 +63,6 @@ async function run(){
 
         })
 
-        app.get('/users', async(req, res) =>{
-            const query = {};
-            const users = await usersCollection.find(query).toArray()
-            res.send(users)
-        })
-
 
         app.post('/users', async(req, res) =>{
             const user = req.body;
@@ -84,6 +78,25 @@ async function run(){
             res.send(result)
         })
 
+
+        // advertaise
+        app.put('/products/seller/:id', async(req, res) =>{
+            const id = req.params.id;
+            const filter = {_id: ObjectId(id)}
+            console.log('id', id)
+            const options = { upsert: true }
+            const updatedDoc = {
+                $set: {
+                    roleModel: 'Advertised'
+                }
+            }
+            const result = await productsCollection.updateOne(filter, updatedDoc, options)
+
+            // console.log(result)
+
+            res.send(result)
+        })
+
         // app.get('/products/:id', async(req, res) =>{
         //     const id = req.params.id;
         //     const query = { _id: ObjectId(id)}
@@ -95,7 +108,7 @@ async function run(){
             // const email = req.params.email;
             const query = { }
             const product = await productsCollection.find(query).toArray();
-            console.log(product)
+            // console.log(product)
             res.send(product)
         })
 
@@ -131,12 +144,34 @@ async function run(){
 
 
 
+        // app.get('/users', async(req, res) =>{
+        //     const query = {}
+        //     const users = await usersCollection.find(query).toArray()
+        //     res.send(users)
+        // })
+
+
+        
         app.get('/users', async(req, res) =>{
-            const query = {}
+            const query = {};
             const users = await usersCollection.find(query).toArray()
             res.send(users)
         })
 
+
+        // advertise field add 
+        // app.put('/addAdvertise', async(req, res) =>{
+        //     const filter = {}
+        //     const options = { upsert: true }
+        //     const updatedDoc = {
+        //         $set: {
+        //             Advertised: 'Ad'
+        //         }
+        //     }
+        //     const result = await productsCollection.updateMany(filter, updatedDoc, options)
+
+        //     res.send(result)
+        // })
 
         // make admin 
         app.put('/users/admin/:id', verifyJWT, async(req, res) =>{
@@ -170,6 +205,8 @@ async function run(){
             const result = await usersCollection.deleteOne(filter)
             res.send(result)
         })
+
+
 
 
 
