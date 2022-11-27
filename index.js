@@ -88,6 +88,30 @@ async function run(){
             res.send(product)
         })
 
+
+
+        // particular user 
+        app.get('/users/admin/:email', async(req, res) =>{
+            const email = req.params.email
+            const query = { email }
+            console.log(email)
+            
+            const user = await usersCollection.findOne(query)
+            console.log(user)
+            res.send({isAdmin: user?.role === "Admin"})
+        })
+
+        //seller
+
+        app.get('/users/seller/:email', async(req, res) =>{
+            const email = req.params.email
+            const query = { email }
+            const user = await usersCollection.findOne(query)
+            res.send({isSeller: user?.allUsers === "Seller"})
+        })
+
+
+
         app.get('/users', async(req, res) =>{
             const query = {}
             const users = await usersCollection.find(query).toArray()
@@ -96,7 +120,17 @@ async function run(){
 
 
         // make admin 
-        app.put('/users/admin/:id', async(req, res) =>{
+        app.put('/users/admin/:id', verifyJWT, async(req, res) =>{
+            const decodedEmail = req.decoded.email;
+
+            const query = { email: decodedEmail }
+            const user = await usersCollection.findOne(query)
+
+            if(user.role !== 'Adimn'){
+                return res.status(403).send({message: 'Forbidden access'})
+            }
+
+
             const id = req.params.id;
             const filter = {_id: ObjectId(id)}
             const options = { upsert: true }
@@ -109,6 +143,9 @@ async function run(){
 
             res.send(result)
         })
+
+
+
 
 
     }
