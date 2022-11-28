@@ -50,6 +50,9 @@ async function run(){
 
         const productsCollection = client.db('resalePortal').collection('products')
 
+
+        const ordersCollection = client.db('resalePortal').collection('orders')
+
         app.get('/jwt', async(req, res) =>{
             const email = req.query.email;
             const query = {email: email}
@@ -135,23 +138,6 @@ async function run(){
             // console.log(user)
             res.send({isSeller: user?.allUsers === "Seller"})
         })
-
-        // app.get('/products', async(req, res) =>{
-        //     const email = req.params.email;
-        //     const query = {email: email}
-        //     const products = await productsCollection.find(query).toArray()
-        //     res.send(products)
-        // })
-
-
-
-        // app.get('/users', async(req, res) =>{
-        //     const query = {}
-        //     const users = await usersCollection.find(query).toArray()
-        //     res.send(users)
-        // })
-
-
         
         app.get('/users', async(req, res) =>{
             const query = {};
@@ -160,13 +146,30 @@ async function run(){
         })
 
 
-        // advertise field add 
-        // app.put('/addAdvertise', async(req, res) =>{
+        // orders post
+        app.post('/orders', async(req, res) =>{
+            const orders = req.body;
+            console.log(orders)
+            const result = await ordersCollection.insertOne(orders)
+            res.send(result)
+        })
+
+        // order gets for my orders 
+        app.get('/orders', async(req, res) =>{
+            // const email = req.params.email;
+            const query = {  }
+            const orders = await ordersCollection.find(query).toArray()
+            res.send(orders)
+        })
+
+
+        // addavailableProduct field add 
+        // app.get('/addavailableProduct', async(req, res) =>{
         //     const filter = {}
         //     const options = { upsert: true }
         //     const updatedDoc = {
         //         $set: {
-        //             Advertised: 'Ad'
+        //             availableProduct: 5
         //         }
         //     }
         //     const result = await productsCollection.updateMany(filter, updatedDoc, options)
