@@ -7,6 +7,8 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 require('dotenv').config()
 
+// const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY)
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const jwt = require('jsonwebtoken');
 
 
@@ -52,6 +54,9 @@ async function run(){
 
 
         const ordersCollection = client.db('resalePortal').collection('orders')
+
+
+        const paymentsCollection = client.db('resalePortal').collection('payments')
 
         app.get('/jwt', async(req, res) =>{
             const email = req.query.email;
@@ -161,6 +166,55 @@ async function run(){
             const orders = await ordersCollection.find(query).toArray()
             res.send(orders)
         })
+
+        app.get('/orders/:id', async(req, res) =>{
+            const id = req.params.id;
+            const quary = {_id: ObjectId(id)}
+            const order = await ordersCollection.findOne(quary)
+            res.send(order)
+        })
+
+        // payment 
+
+        app.post('/create-payment-intent', async(req, res) =>{
+            const order = req.body;
+            let price = order.price;
+            price = parseInt(price)
+            const amount = price * 100; 
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                currency: "usd",
+                amount: amount,
+                "payment_method_types": [
+                    "card"
+                ]
+            })
+
+            res.send({
+                clientSecret: paymentIntent.client_secret,
+              });
+        })
+
+
+        app.post('/payments', async(req, res) =>{
+            const payment = req.body;
+            const result = await paymentsCollection.insertOne(payment)
+
+            const id = payment.orderId;
+            const filter = {_id: ObjectId(id)}
+            const updatedDoc = {
+                $set: {
+                    paid: true,
+                    transactionId: payment.transactionId
+                }
+            }
+
+            const updateResult = await ordersCollection.updateOne(filter, updatedDoc)
+
+            res.send(result)
+        })
+
+
 
 
         // addavailableProduct field add 
