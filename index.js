@@ -143,6 +143,8 @@ async function run(){
             // console.log(user)
             res.send({isSeller: user?.allUsers === "Seller"})
         })
+
+        
         
         app.get('/users', async(req, res) =>{
             const query = {};
@@ -150,6 +152,7 @@ async function run(){
             res.send(users)
         })
 
+      
 
         // orders post
         app.post('/orders', async(req, res) =>{
@@ -166,6 +169,16 @@ async function run(){
             const orders = await ordersCollection.find(query).toArray()
             res.send(orders)
         })
+
+          // buyer
+          app.get('/users/buyer/:email',  async(req, res) =>{
+            const email = req.params.email
+            const query = { email: email }
+            const user = await usersCollection.findOne(query)
+            // console.log(user)
+            res.send({isBuyer: user?.allUsers === "Buyer"})
+        })
+
 
         app.get('/orders/:id', async(req, res) =>{
             const id = req.params.id;
