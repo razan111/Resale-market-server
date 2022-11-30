@@ -54,6 +54,7 @@ async function run(){
 
 
         const ordersCollection = client.db('resalePortal').collection('orders')
+        const wishlistCollection = client.db('resalePortal').collection('wishlist')
 
 
         const paymentsCollection = client.db('resalePortal').collection('payments')
@@ -86,6 +87,7 @@ async function run(){
 
         app.post('/users', async(req, res) =>{
             const user = req.body;
+            console.log(user)
             const result = await usersCollection.insertOne(user)
             res.send(result)
         })
@@ -169,6 +171,16 @@ async function run(){
             res.send({isSeller: user?.allUsers === "Seller"})
         })
 
+         // buyer
+         app.get('/users/buyer/:email',  async(req, res) =>{
+            const email = req.params.email
+            const query = { email: email }
+            const user = await usersCollection.findOne(query)
+            // console.log(user)
+            res.send({isBuyer: user?.allUsers === "Buyer"})
+        })
+
+
         
         
         app.get('/users', async(req, res) =>{
@@ -195,22 +207,38 @@ async function run(){
             res.send(orders)
         })
 
-          // buyer
-          app.get('/users/buyer/:email',  async(req, res) =>{
-            const email = req.params.email
-            const query = { email: email }
-            const user = await usersCollection.findOne(query)
-            // console.log(user)
-            res.send({isBuyer: user?.allUsers === "Buyer"})
-        })
-
-
         app.get('/orders/:id', async(req, res) =>{
             const id = req.params.id;
             const quary = {_id: ObjectId(id)}
             const order = await ordersCollection.findOne(quary)
             res.send(order)
         })
+
+        app.post('/wishlist', async(req, res) =>{
+            const wishlist = req.body;
+            const result = await wishlistCollection.insertOne(wishlist)
+            res.send(result)
+        })
+
+        app.get('/wishlist', async(req, res) =>{
+            // const email = req.params.email;
+            const query = {  }
+            const wishlist = await wishlistCollection.find(query).toArray()
+            res.send({isBuyer: wishlist?.allUsers === "Buyer"})
+        })
+
+        app.get('/wishlist/:id', async(req, res) =>{
+            const id = req.params.id;
+            const quary = {_id: ObjectId(id)}
+            const order = await wishlistCollection.findOne(quary)
+            res.send(order)
+        })
+
+
+
+         
+
+        
 
         // payment 
 
