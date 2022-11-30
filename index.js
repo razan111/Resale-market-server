@@ -63,7 +63,7 @@ async function run(){
             const query = {email: email}
             const user = await usersCollection.findOne(query)
             if(user && user.email){
-                const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn: '1h'})
+                const token = jwt.sign({email}, process.env.ACCESS_TOKEN, {expiresIn: '1d'})
                 return res.send({accessToken: token})
             }
             console.log(user)
@@ -73,15 +73,15 @@ async function run(){
 
 
         // google user 
-        app.put('/users/:email', verifyJWT, (req, res)=>{
-            try{
-                const email = req.params.email;
-                console.log(email)
-            }
-            catch(err){
-                console.log(err)
-            }
-        })
+        // app.put('/users/:email', verifyJWT, (req, res)=>{
+        //     try{
+        //         const email = req.params.email;
+        //         console.log(email)
+        //     }
+        //     catch(err){
+        //         console.log(err)
+        //     }
+        // })
 
 
         app.post('/users', async(req, res) =>{
@@ -255,43 +255,28 @@ async function run(){
 
 
 
-        // addavailableProduct field add 
-        // app.get('/addavailableProduct', async(req, res) =>{
-        //     const filter = {}
-        //     const options = { upsert: true }
-        //     const updatedDoc = {
-        //         $set: {
-        //             availableProduct: 5
-        //         }
-        //     }
-        //     const result = await productsCollection.updateMany(filter, updatedDoc, options)
+   
 
-        //     res.send(result)
-        // })
-
-        // make admin 
         app.put('/users/admin/:id', verifyJWT, async(req, res) =>{
             const decodedEmail = req.decoded.email;
-
-            const query = { email: decodedEmail }
+            const query = {email: decodedEmail}
+            console.log(query)
             const user = await usersCollection.findOne(query)
 
-            if(user.role !== 'Adimn'){
-                return res.status(403).send({message: 'Forbidden access'})
+            if(user?.role !== 'Admin'){
+                return res.status(403).send({message: 'forbiden access'})
             }
 
-
             const id = req.params.id;
-            const filter = {_id: ObjectId(id)}
-            const options = { upsert: true }
-            const updatedDoc = {
+            const filter = { _id: ObjectId(id)}
+            const options = {upsert: true}
+            const updatedDoc ={
                 $set: {
                     role: 'Admin'
                 }
             }
             const result = await usersCollection.updateOne(filter, updatedDoc, options)
-
-            res.send(result)
+            res.send (result)
         })
 
 
