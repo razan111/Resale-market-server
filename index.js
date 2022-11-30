@@ -72,6 +72,18 @@ async function run(){
         })
 
 
+        // google user 
+        app.put('/users/:email', verifyJWT, (req, res)=>{
+            try{
+                const email = req.params.email;
+                console.log(email)
+            }
+            catch(err){
+                console.log(err)
+            }
+        })
+
+
         app.post('/users', async(req, res) =>{
             const user = req.body;
             const result = await usersCollection.insertOne(user)
@@ -85,6 +97,8 @@ async function run(){
             const result = await productsCollection.insertOne(product)
             res.send(result)
         })
+
+
 
 
         // advertaise
@@ -113,6 +127,14 @@ async function run(){
             const product = await productsCollection.find(query).toArray();
             res.send(product)
         })
+
+        // productCategory
+        // app.get('/products/:category', async(req, res) =>{
+        //     // const category = req.params.productCategory;
+        //     const query = {}
+        //     const product = await productsCollection.find(query).toArray()
+        //     res.send(product)
+        // })
         
 
         app.get('/products/:email',  async(req, res)=>{
@@ -120,6 +142,9 @@ async function run(){
             const product = await productsCollection.find(query).toArray();
             res.send(product)
         })
+
+
+        
 
 
 
